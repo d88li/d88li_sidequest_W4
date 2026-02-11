@@ -23,6 +23,10 @@ class Player {
     // Movement throttle (so a key press doesn't move 60 tiles per second).
     this.movedAt = 0;
     this.moveDelay = 90; // ms
+    // Immunity state (powered-up by collecting a star)
+    this.immune = false;
+    this.immuneStart = 0;
+    this.immuneDuration = 3000; // ms
   }
 
   // Place the player at a specific grid location (e.g., the level's start).
@@ -41,7 +45,25 @@ class Player {
   }
 
   draw() {
-    // Same "simple high-contrast avatar" idea as your original. 
+    // ai modified (See <attachments> above for file contents. You may not need to search or read the file again.)
+    // While immune, show a rainbow-shifting avatar that cycles every 0.1s.
+    if (this.immune) {
+      const elapsed = millis() - this.immuneStart;
+      if (elapsed >= this.immuneDuration) {
+        this.immune = false;
+      } else {
+        push();
+        colorMode(HSB, 360, 100, 100);
+        // ai modified: change colour every 0.005 seconds (5 ms)
+        const hue = Math.floor((elapsed / 5) % 360);
+        fill(hue, 100, 100);
+        circle(this.pixelX(), this.pixelY(), this.ts * 0.6);
+        pop();
+        return;
+      }
+    }
+
+    // Default avatar
     fill(20, 120, 255);
     circle(this.pixelX(), this.pixelY(), this.ts * 0.6);
   }
